@@ -1,0 +1,88 @@
+
+  # Namespace where the deployment will be created                  
+namespace: my-project1
+
+# Name of the application
+fullname: nginx-proxy
+
+# Number of replicas
+replicaCount: 1
+
+# History limit of revisions
+revisionHistoryLimit: 10
+
+# History limit of revisions
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+    
+# Labels for the deployment and pods    
+labels:
+  app: nginx-proxy
+  environment: production
+  
+ # Selector and Labels for the deployment and pods
+selector:
+  matchLabels:
+    app: nginx-proxy
+    environment: production
+    
+# Template labels for the deployment and pods
+template:
+  labels:
+    app: nginx-proxy
+    environment: production
+
+ # Image pull secrets for accessing private registries
+imagePullSecrets:
+  - name: registry-dockerhub   
+
+# Image configuration
+image:
+  repository: docker.io/paphat82/nginx-reverse-proxy
+  tag: latest
+  pullPolicy: IfNotPresent
+  
+# Container configuration
+containers:
+  containerPort: 80
+  env:
+    - name: TZ
+      value: "Asia/Bangkok"
+  resources:
+    limits:
+      memory: 3Gi
+      cpu: '1'
+    requests:
+      memory: 50Mi
+      cpu: 50m
+      
+volumes: {}
+nodeSelector: {}
+affinity: {}
+tolerations: []
+
+#service
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  labels:
+    app: nginx-proxy
+  containerPort: 80
+  
+serviceAccount:
+  create: false
+  use_existing: false
+  name: ""
+  
+# HPA configuration
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    cpu:
+      averageUtilization: 50
+

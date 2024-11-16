@@ -1,0 +1,95 @@
+
+  # Namespace where the deployment will be created                  
+namespace: my-project1
+
+# Name of the application
+fullname: nodejs-app
+
+# Number of replicas
+replicaCount: 1
+
+# History limit of revisions
+revisionHistoryLimit: 10
+
+# History limit of revisions
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+    
+# Labels for the deployment and pods    
+labels:
+  app: nodejs-app
+  environment: production
+  
+ # Selector and Labels for the deployment and pods
+selector:
+  matchLabels:
+    app: nodejs-app
+    environment: production
+    
+# Template labels for the deployment and pods
+template:
+  labels:
+    app: nodejs-app
+    environment: production
+
+ # Image pull secrets for accessing private registries
+imagePullSecrets:
+  - name: registry-dockerhub   
+
+# Image configuration
+image:
+  repository: docker.io/paphat82/nodejs-app
+  tag: latest
+  pullPolicy: IfNotPresent
+  
+# Container configuration
+containers:
+  containerPort: 8080
+  env:
+    - name: TZ
+      value: "Asia/Bangkok"
+    - name: DB_HOST
+      value: "postgres"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_PASSWORD
+      value: "123"
+    - name: DB_NAME
+      value: "testdb"     
+  resources:
+    limits:
+      memory: 3Gi
+      cpu: '1'
+    requests:
+      memory: 50Mi
+      cpu: 50m
+      
+volumes: {}
+nodeSelector: {}
+affinity: {}
+tolerations: []
+
+#service
+service:
+  enabled: true
+  type: ClusterIP
+  port: 8080
+  labels:
+    app: nodejs-app
+  containerPort: 8080
+  
+serviceAccount:
+  create: false
+  use_existing: false
+  name: ""
+  
+# HPA configuration
+hpa:
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+    cpu:
+      averageUtilization: 50

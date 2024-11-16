@@ -1,0 +1,15 @@
+
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.fullname }}-svc
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.service.port | default 80 }}
+      targetPort: {{ .Values.containers.containerPort | default 80 }}
+  selector:
+    app: {{ .Values.labels.app }}
+{{- end }}

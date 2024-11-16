@@ -1,0 +1,18 @@
+# persistent-volume.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.pv.name | default "postgres-pv" }}
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  capacity:
+    storage: {{ .Values.pv.capacity | default "1Gi" }}
+  accessModes:
+    - {{ .Values.pv.accessMode | default "ReadWriteOnce" }}
+  hostPath:
+    path: {{ .Values.pv.hostPath | default "/data/postgres" }}
+  persistentVolumeReclaimPolicy: Retain  # กำหนดการเก็บรักษาหลัง PVC ถูกลบ
+  storageClassName: ""  # ไม่กำหนดค่า StorageClass ใช้ HostPath

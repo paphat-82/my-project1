@@ -1,0 +1,18 @@
+
+# persistent-volume-claim.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pvc.name | default "postgres-pvc" }}
+  namespace: {{ .Values.namespace | default "my-project1" }}  # กำหนด namespace ที่จะใช้
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.storage | default "1Gi" }}
+  volumeName: {{ .Values.pv.name | default "postgres-pv" }}  # เชื่อมโยงกับ PersistentVolume

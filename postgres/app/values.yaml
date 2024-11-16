@@ -1,0 +1,108 @@
+# Namespace where the deployment will be created
+namespace: my-project1
+
+# Name of the application
+fullname: postgres
+
+# Number of replicas
+replicaCount: 1
+
+# Persistent Volume Configuration
+pv:
+  name: postgres-pv
+  capacity: 1Gi
+  accessMode: ReadWriteOnce
+  hostPath: /data/postgres
+
+# Persistent Volume Claim Configuration
+pvc:
+  name: postgres-pvc
+  accessMode: ReadWriteOnce
+  storage: 1Gi
+
+# History limit of revisions
+revisionHistoryLimit: 10
+
+# Deployment strategy
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+
+# Labels for the deployment and pods
+labels:
+  app: postgres
+  environment: production
+
+# Selector and Labels for the deployment and pods
+selector:
+  matchLabels:
+    app: postgres
+    environment: production
+
+# Template labels for the deployment and pods
+template:
+  labels:
+    app: postgres
+    environment: production
+
+# Image pull secrets for accessing private registries
+imagePullSecrets:
+  - name: registry-dockerhub
+
+# Image configuration
+image:
+  repository: docker.io/postgres
+  tag: 13
+  pullPolicy: IfNotPresent
+
+# Container configuration
+containers:
+  containerPort: 5432
+  env:
+    - name: TZ
+      value: "Asia/Bangkok"
+    - name: POSTGRES_USER
+      value: "postgres"
+    - name: POSTGRES_PASSWORD
+      value: "123"
+    - name: POSTGRES_DB
+      value: "testdb"
+  volumeMounts:
+    - name: postgres-storage
+      mountPath: /var/lib/postgresql/data
+  resources:
+    limits:
+      memory: 3Gi
+      cpu: '1'
+    requests:
+      memory: 50Mi
+      cpu: 50m
+
+volumes:
+  - name: postgres-storage
+    persistentVolumeClaim:
+      claimName: postgres-pvc
+
+# Service configuration
+service:
+  enabled: true
+  type: ClusterIP
+  port: 5432
+  labels:
+    app: postgres
+  containerPort: 5432
+
+serviceAccount:
+  create: false
+  use_existing: false
+  name: ""
+
+# Horizontal Pod Autoscaler configuration
+hpa:
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+    cpu:
+      averageUtilization: 50

@@ -1,0 +1,35 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace | default "default" }}
+  name: {{ .Values.fullname }}
+  labels:
+    app: {{ .Values.labels.app }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Values.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.labels.app }}
+    spec:
+      # เพิ่ม imagePullSecrets ที่นี่       
+      imagePullSecrets:
+        {{- if .Values.imagePullSecrets }}
+        {{- range .Values.imagePullSecrets }}
+      - name: {{ .name | quote }}
+        {{- end }}
+        {{- end }}
+
+      containers:
+        - name: {{ .Values.fullname }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
+          ports:
+            - containerPort: {{ .Values.containers.containerPort | default 80 }}
+          env:
+            {{- toYaml .Values.containers.env | nindent 12 }}
+          resources:
+            {{- toYaml .Values.containers.resources | nindent 12 }}
