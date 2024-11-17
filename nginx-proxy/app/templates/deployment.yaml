@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,16 +19,24 @@ spec:
       imagePullSecrets:
         {{- if .Values.imagePullSecrets }}
         {{- range .Values.imagePullSecrets }}
-      - name: {{ .name | quote }}
+        - name: {{ .name | quote }}
         {{- end }}
         {{- end }}
-
+        
       containers:
         - name: {{ .Values.fullname }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
           ports:
             - containerPort: {{ .Values.containers.containerPort | default 80 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
           env:
             {{- toYaml .Values.containers.env | nindent 12 }}
           resources:
             {{- toYaml .Values.containers.resources | nindent 12 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.configMap.name }}
