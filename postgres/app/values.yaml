@@ -102,7 +102,7 @@ serviceAccount:
 # Horizontal Pod Autoscaler configuration
 hpa:
   minReplicas: 1
-  maxReplicas: 1
+  maxReplicas: 5
   metrics:
     cpu:
       averageUtilization: 50
