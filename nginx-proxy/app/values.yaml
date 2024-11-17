@@ -6,7 +6,7 @@ namespace: my-project1
 fullname: nginx-proxy
 
 # Number of replicas
-replicaCount: 1
+replicaCount: 2
 
 # History limit of revisions
 revisionHistoryLimit: 10
@@ -103,7 +103,7 @@ serviceAccount:
   
 # HPA configuration
 hpa:
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 5
   metrics:
     cpu:
