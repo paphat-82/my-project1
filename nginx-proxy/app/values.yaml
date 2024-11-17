@@ -73,7 +73,7 @@ configMap:
         server {
           listen 80;
           location / {
-            proxy_pass http://nodejs-app:8080; # ส่ง request ไปยัง service "app"
+            proxy_pass http://nodejs-app:8080; 
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
